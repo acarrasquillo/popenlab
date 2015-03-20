@@ -31,7 +31,7 @@ print """
             <a href="homeworks.cgi" class="list-group-item">Homeworks Insecure</a>
             <a href="homeworks2.cgi" class="list-group-item">Homeworks Secure</a>
             <a href="files.cgi" class="list-group-item">Cat File Insecure</a>
-            <--<a href="#" class="list-group-item">Lab 7</a>
+            <!--<a href="#" class="list-group-item">Lab 7</a>
             <a href="#" class="list-group-item">Lab 8</a>
             <a href="#" class="list-group-item">Lab 9</a>
             <a href="#" class="list-group-item">Lab 10</a> -->

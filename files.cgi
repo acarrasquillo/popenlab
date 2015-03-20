@@ -1,47 +1,76 @@
 #!/usr/bin/python
-
-import cgi
-import cgitb
+import cgi,cgitb, template, bleach, os
 cgitb.enable()
-import os
-import template
 
-print """Content-Type: text/html"""
+def is_semicolon(s):
+  if ';' in s:
+    return True
+  else:
+    return False
+
+print ("Content-Type: text/html; charset=utf-8\r\n")
 print
 
 print template.header()
 print template.navbar()
 
-print """
-	<div class="row row-offcanvas row-offcanvas-right">
-        <div class="col-xs-12 col-sm-9">
-          <p class="pull-right visible-xs">
-            <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle Labs</button>
-          </p>
-          <div class="jumbotron">
-            <h1>Professor Acevedo</h1>
-            <p>Puertorican Literature Course. In this webpage students can search for homeworks assigned in class.</p>
-            <br>
-          </div>
-          
-        </div><!--/.col-xs-12.col-sm-9-->
 
-        <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar">
-          <div class="list-group">
-            <a href="homeworks.cgi" class="list-group-item">Homeworks Insecure</a>
-            <a href="homeworks2.cgi" class="list-group-item">Homeworks Secure</a>
-            <!-- <a href="#" class="list-group-item">Lab 6</a>
-            <a href="#" class="list-group-item">Lab 7</a>
-            <a href="#" class="list-group-item">Lab 8</a>
-            <a href="#" class="list-group-item">Lab 9</a>
-            <a href="#" class="list-group-item">Lab 10</a> -->
-          </div>
-        </div><!--/.sidebar-offcanvas-->
-     </div><!--/row-->"""
+print (""" 
+  <div class="page-header"> 
+  <h1> LITE 2015: Files</h1>
+  </div>
+  """)
+
+form = cgi.FieldStorage()
+filename = form.getvalue("filename", "")
 
 print ("""
-  <script>
-    document.getElementById("home").className = "active";
-  </script>
-  """)
+
+  <div class="panel panel-primary">
+  <div class="panel-heading">
+    <h5 class="panel-tittle">File Name</h5>
+  </div>
+  <div class="panel-body">
+    <p> Access the content of a file by entering its name.</p>
+    <form method="get">
+      <div class="input-group">
+        <span class="input-group-addon" id="basic-addon1"><span class = "glyphicon glyphicon-user"></span></span>
+        <input type="text" value="%s" class="form-control" name="filename" aria-describedby="basic-addon1" placeholder="File Name"></input>
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="submit">Search</button>
+        </span>
+      </div>
+    </form>
+  </div>
+  </div> <!-- panel-primary -->
+
+  """ % bleach.clean(filename))
+
+if filename != '' and not is_semicolon(filename):
+
+  try:
+    thefile = os.popen("cat %s" % filename)
+    print """<p>
+               <div class="panel panel-success">
+                 <div class="panel-heading">
+                  File Content
+                 </div>
+               <div class="panel-body">
+             <pre> """
+    for line in thefile.readlines():
+      line = line.replace('<', '&lt;')
+      print line
+    print """</pre>
+             </div>
+             </div>"""
+      
+  except IOError:
+    print "Could not find the file"
+
+elif is_semicolon(filename) and filename !="":
+  print("""<div id="alert" class="alert alert-danger" role="alert"> You must submit a file name.</div>""")
+
+
+
 print template.footer()
+
